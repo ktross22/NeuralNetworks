@@ -7,18 +7,18 @@ namespace NeuralNetworks
 {
     public class Neuron
     {
-        public List<double> Weights { get; }
+        public List<double> Weigths { get; }
         public NeuronType NeuronType { get; }
         public double Output { get; private set; }
 
         public Neuron(int inputCount, NeuronType type = NeuronType.Normal)
         {
             NeuronType = type;
-            Weights = new List<double>();
+            Weigths = new List<double>();
 
             for(int i = 0; i< inputCount; i++)
             {
-                Weights.Add(1);
+                Weigths.Add(1);
             }
         }
 
@@ -27,7 +27,7 @@ namespace NeuralNetworks
             var sum = 0.0;
             for(int i =0; i< inputs.Count; i++)
             {
-                sum += inputs[i] * Weights[i];
+                sum += inputs[i] * Weigths[i];
             }
 
             Output = Sigmoid(sum);
@@ -37,6 +37,14 @@ namespace NeuralNetworks
         {
             var result = 1.0 / (1.0 + Math.Pow(Math.E, -x));
             return result;
+        }
+        public void SetWigths(params double[] weigths)
+        {
+            //TODO: удалить после добавления возможности обучения сети
+            for(int i=0; i< weigths.Length;i++)
+            {
+                Weigths[i] = weigths[i];
+            }
         }
 
         public override string ToString()
