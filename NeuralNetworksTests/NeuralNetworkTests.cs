@@ -16,7 +16,8 @@ namespace NeuralNetworks.Tests
         public void FeedForwardTest()
 
         {
-            var dataset = new List<Tuple<double, double[]>>
+            var outputs = new double[] { 0, 0, 1, 0, 0, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1 };
+            var inputs = new double[,]
             { 
 
         // Результат - Пациент болен - 1
@@ -27,39 +28,39 @@ namespace NeuralNetworks.Tests
             // Курит S
             // Правильно питается F
                                                              //T  A  S  F
-                new Tuple<double, double[]>(0, new double[] { 0, 0, 0, 0 }),
-                new Tuple<double, double[]>(0, new double[] { 0, 0, 0, 1}),
-                new Tuple<double, double[]>(1, new double[] { 0, 0, 1, 0}),
-                new Tuple<double, double[]>(0, new double[] { 0, 0, 1, 1}),
-                new Tuple<double, double[]>(0, new double[] { 0, 1, 0, 0 }),
-                new Tuple<double, double[]>(0, new double[] { 0, 1, 0, 1 }),
-                new Tuple<double, double[]>(1, new double[] { 0, 1, 1, 0}),
-                new Tuple<double, double[]>(0, new double[] { 0, 1, 1, 1 }),
-                new Tuple<double, double[]>(1, new double[] { 1, 0, 0, 0 }),
-                new Tuple<double, double[]>(1, new double[] { 1, 0, 0, 1 }),
-                new Tuple<double, double[]>(1, new double[] { 1, 0, 1, 0 }),
-                new Tuple<double, double[]>(1, new double[] { 1, 0, 1, 1 }),
-                new Tuple<double, double[]>(1, new double[] { 1, 1, 0, 0 }),
-                new Tuple<double, double[]>(0, new double[] { 1, 1, 0, 1 }),
-                new Tuple<double, double[]>(1, new double[] { 1, 1, 1, 0 }),
-                new Tuple<double, double[]>(1, new double[] { 1, 1, 1, 1})
+                { 0, 0, 0, 0 },
+                 { 0, 0, 0, 1},
+                 { 0, 0, 1, 0},
+                { 0, 0, 1, 1},
+                 { 0, 1, 0, 0 },
+                { 0, 1, 0, 1 },
+                 { 0, 1, 1, 0},
+                { 0, 1, 1, 1 },
+                 { 1, 0, 0, 0 },
+                 { 1, 0, 0, 1 },
+                 { 1, 0, 1, 0 },
+                { 1, 0, 1, 1 },
+                { 1, 1, 0, 0 },
+                { 1, 1, 0, 1 },
+                { 1, 1, 1, 0 },
+                { 1, 1, 1, 1}
         };
-            var topology = new Topology(4, 1,0.1,2);
+            var topology = new Topology(4, 1, 0.1, 2);
             var neuralNetwork = new NeuralNetwork(topology);
-            var diffecence = neuralNetwork.Learn(dataset,100000);
+            var difference = neuralNetwork.Learn(outputs, inputs, 10000);
+
             var results = new List<double>();
-            foreach(var data in dataset)
+            for (int i = 0; i < outputs.Length; i++)
             {
-                var res = neuralNetwork.FeedForward(data.Item2).Output;
-               results.Add(res); 
+                var row = NeuralNetwork.GetRow(inputs, i);
+                var res = neuralNetwork.Predict(row).Output;
+                results.Add(res);
             }
 
-            for(int i =0; i <results.Count;i++)
+            for (int i =0; i <results.Count;i++)
             {
-
-
-                var expected = Math.Round(dataset[i].Item1, 3);
-                var actual = Math.Round(results[i], 3);
+                var expected = Math.Round(outputs[i], 2);
+                var actual = Math.Round(results[i], 2);
                 Assert.AreEqual(expected, actual);
             }
         }
