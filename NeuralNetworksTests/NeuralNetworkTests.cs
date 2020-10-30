@@ -112,5 +112,51 @@ namespace NeuralNetworks.Tests
             }
         }
 
+
+        [TestMethod()]
+        public void RecognizeImage()
+        {
+            var size = 1000;
+            var parasitizedPath = @"D:\cell_images\Parasitized\";
+            var uninfectedPath = @"D:\cell_images\Uninfected\";
+
+            var conventer = new PictureConverter();
+            var testParasitizedImageInput = conventer.Convert(@"C:\Users\Олег\source\repos\NeuralNetworks\NeuralNetworksTests\Image\Parasitized.png");
+            var testUninfectedImageInput = conventer.Convert(@"C:\Users\Олег\source\repos\NeuralNetworks\NeuralNetworksTests\Image\Uninfected.png");
+            var topology = new Topology(testParasitizedImageInput.Length, 1, 0.1, testParasitizedImageInput.Length / 2);
+
+            var neuralNetwork = new NeuralNetwork(topology);
+
+            double[,] parasitizedInputs = GetData(parasitizedPath, conventer, testParasitizedImageInput,size);
+            neuralNetwork.Learn(new double[] { 1 }, parasitizedInputs, 1);
+
+            double[,] uninfectedInputs = GetData(uninfectedPath, conventer, testParasitizedImageInput,size);
+            neuralNetwork.Learn(new double[] { 0 }, uninfectedInputs, 1);
+
+
+           var par=neuralNetwork.Predict(testParasitizedImageInput.Select(t => (double)t).ToArray());
+           var unpar= neuralNetwork.Predict(testUninfectedImageInput.Select(t => (double)t).ToArray());
+
+            Assert.AreEqual(1, Math.Round(par.Output, 2));
+            Assert.AreEqual(0, Math.Round(unpar.Output, 2));
+
+        }
+
+        private static double[,] GetData(string parasitizedPath, PictureConverter conventer, double[] testImageInput, int size)
+        {
+            var images = Directory.GetFiles(parasitizedPath);
+            var result = new double[size, testImageInput.Length];
+            for (int i = 0; i < size; i++)
+            {
+                var image = conventer.Convert(images[i]);
+                for (int j = 0; j < image.Length; j++)
+                {
+                    result[i,j] = image[j];
+                }
+
+            }
+
+            return result;
+        }
     }
 }
